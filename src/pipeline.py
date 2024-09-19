@@ -3,6 +3,7 @@ from PIL.Image import Image
 from diffusers import StableDiffusionXLPipeline
 from pipelines.models import TextToImageRequest
 from torch import Generator
+from diffusers.models.attention_processor import AttnProcessor2_0
 
 
 def load_pipeline() -> StableDiffusionXLPipeline:
@@ -12,6 +13,7 @@ def load_pipeline() -> StableDiffusionXLPipeline:
         local_files_only=True,
     ).to("cuda")
     pipeline.unet = torch.compile(pipeline.unet, mode='reduce-overhead', fullgraph=True)
+    pipe.unet.set_attn_processor(AttnProcessor2_0())
 
     pipeline(prompt="")
 
